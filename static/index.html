@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claimline: call in a claim</title>
+  <meta name="description" content="A voice agent for commercial insurance claims. Call in a claim and watch the file fill in." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="view-welcome">
+  <header class="bar">
+    <a class="wordmark" href="/">Claimline</a>
+    <div class="callbar">
+      <span id="callState" class="callstate">Not on a call</span>
+      <span id="latency" class="latency"></span>
+      <button id="endBtn" class="btn btn-end" disabled>End call</button>
+      <button id="newCallBtn" class="btn btn-quiet">New call</button>
+    </div>
+    <select id="scenarioSelect" class="hidden" aria-hidden="true" tabindex="-1"></select>
+  </header>
+
+  <!-- Landing -->
+  <section id="welcome">
+    <div class="intro">
+      <h1>Call in a claim and watch the file fill in.</h1>
+      <p class="lede">
+        Claimline is a voice agent for commercial claims: trucking, cyber, and liability.
+        Pick who you're calling as and talk normally. While you talk, it builds what an adjuster
+        would get: deadlines, coverage questions, severity, and where the claim is routed.
+        People still make every coverage decision.
+      </p>
+
+      <fieldset class="callers">
+        <legend>Who are you calling as?</legend>
+        <div id="personas"></div>
+      </fieldset>
+
+      <div class="start">
+        <button id="startBtn" class="btn btn-primary btn-large">Start the call</button>
+        <label class="code-field hidden" id="codeField">
+          <span>Access code</span>
+          <input id="accessCode" autocomplete="off" />
+        </label>
+      </div>
+      <p class="fineprint">Use headphones so the agent doesn't hear itself. Calls end after <span id="maxMin">6</span> minutes.</p>
+      <p id="startError" class="error hidden" role="alert"></p>
+      <p class="fineprint">No microphone? <button id="replayBtn" class="btn-link">Play a recorded call</button> for the caller you picked.</p>
+    </div>
+
+    <figure class="preview" aria-label="Example of a claim file built during a call">
+      <div class="sheet sheet-sample">
+        <div class="sheet-head">
+          <span class="sheet-title">Notice of loss</span>
+          <span class="typed">CLM-261113-4812</span>
+        </div>
+        <div class="act-now">
+          <span class="act-label">Act now</span>
+          <p class="typed sample-line">Alcohol test due by 6:40 PM. No drinks until tested.</p>
+        </div>
+        <div class="fields">
+          <div class="field"><span class="cap">Caller</span><span class="typed sample-line">Marcus Hill, driver</span></div>
+          <div class="field"><span class="cap">Doing okay?</span><span class="typed sample-line">Yes, shaken</span></div>
+          <div class="field"><span class="cap">Insured</span><span class="typed sample-line">Ridgeline Freight LLC</span></div>
+          <div class="field"><span class="cap">When</span><span class="typed sample-line">Nov 13, 10:40 AM</span></div>
+          <div class="field wide"><span class="cap">What happened</span><span class="typed sample-line">Rear-ended a sedan on I-80 WB near Reno. Other driver taken to hospital.</span></div>
+        </div>
+        <div class="field wide circle-row">
+          <span class="cap">Severity (circle one)</span>
+          <span class="circle-one"><i>1</i><i>2</i><i>3</i><i class="on">4</i><i>5</i></span>
+        </div>
+        <div class="field wide">
+          <span class="cap">Route to</span>
+          <span class="checks"><span class="check on">Rapid response</span><span class="check">Desk adjuster</span><span class="check">Fast track</span></span>
+        </div>
+      </div>
+      <figcaption>From a test call. The agent filled every field while the caller talked.</figcaption>
+    </figure>
+  </section>
+
+  <!-- Call -->
+  <div id="workspace">
+    <main class="call">
+      <section class="convo" aria-label="Conversation">
+        <div id="roleCard" class="role"></div>
+        <div id="transcript" class="transcript" aria-live="polite"></div>
+        <form id="textForm" class="type-in">
+          <label for="textInput" class="visually-hidden">Type a message as the caller</label>
+          <input id="textInput" placeholder="Rather type? Write here as the caller." autocomplete="off" disabled />
+          <button type="submit" class="btn btn-quiet" disabled id="textBtn">Send</button>
+        </form>
+      </section>
+
+      <section class="sheet sheet-live" aria-label="Claim file">
+        <div class="sheet-head">
+          <span class="sheet-title">Notice of loss</span>
+          <span id="claimNo" class="typed">Claim number pending</span>
+          <span id="status" class="stamp hidden"></span>
+        </div>
+
+        <div class="act-now" id="actNow" hidden>
+          <span class="act-label">Act now</span>
+          <ul id="actions" class="act-list"></ul>
+        </div>
+
+        <h3 class="part">Caller</h3>
+        <div class="fields">
+          <div class="field"><span class="cap">Name</span><span id="caller" class="typed"></span></div>
+          <div class="field"><span class="cap">Calling about</span><span id="reason" class="typed"></span></div>
+          <div class="field wide"><span class="cap">Doing okay?</span><span id="wellbeing" class="typed"></span></div>
+        </div>
+
+        <h3 class="part">Policy and loss</h3>
+        <div class="fields">
+          <div class="field"><span class="cap">Insured</span><span id="insured" class="typed"></span></div>
+          <div class="field"><span class="cap">Line</span><span id="line" class="typed"></span></div>
+          <div class="field"><span class="cap">When</span><span id="when" class="typed"></span></div>
+          <div class="field"><span class="cap">Where</span><span id="where" class="typed"></span></div>
+          <div class="field wide"><span class="cap">What happened</span><span id="what" class="typed"></span></div>
+        </div>
+
+        <h3 class="part">Assessment</h3>
+        <div class="fields">
+          <div class="field wide circle-row">
+            <span class="cap">Severity (circle one)</span>
+            <span id="sevMeter" class="circle-one"></span>
+            <span id="sevDrivers" class="why"></span>
+          </div>
+          <div class="field wide">
+            <span class="cap">Route to</span>
+            <span id="routing" class="checks"></span>
+          </div>
+        </div>
+
+        <h3 class="part">For the adjuster</h3>
+        <div class="fields">
+          <div class="field wide"><span class="cap">Flags</span><ul id="flags" class="notes"></ul></div>
+          <div class="field wide"><span class="cap">Coverage that may apply</span><span id="coverage" class="typed"></span></div>
+          <div class="field"><span class="cap">Still to ask</span><ul id="missing" class="plain"></ul></div>
+          <div class="field"><span class="cap">Documents to request</span><ul id="docs" class="plain"></ul></div>
+        </div>
+
+        <h3 class="part">Brief</h3>
+        <pre id="brief" class="brief typed"></pre>
+
+        <details class="extra">
+          <summary>Raw record</summary>
+          <pre id="claimJson" class="json"></pre>
+        </details>
+        <details class="extra">
+          <summary>Tool calls the agent made</summary>
+          <div id="toolLog" class="tool-log"></div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/fillers.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
