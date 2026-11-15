@@ -73,7 +73,9 @@ DEFAULT_CALLER = ("cedar", "A small business owner calling their insurer. Natura
 
 
 def words(s: str) -> list[str]:
-    return re.findall(r"[a-z]+", s.lower())
+    # Join spelled-out letters ("x y z") so "XYZ" and "X Y Z" compare equal.
+    s = re.sub(r"\b(?:[a-z][ .-]+)+[a-z]\b", lambda m: re.sub(r"[ .-]", "", m.group(0)), s.lower())
+    return re.findall(r"[a-z]+", s)
 
 
 def read_as_written(target: str, transcript: str) -> bool:

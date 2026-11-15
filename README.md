@@ -163,10 +163,10 @@ Browser relays tool calls --> FastAPI /api/tools/{name} --> ClaimSession engine
 
 | Policy | Business name | Use it for |
 |---|---|---|
-| CT-20417 (USDOT 9900417) | Quillmont Freight | Trucking. Drivers: Marcus Hill, Ana Torres. Units: T1 Cascadia, T2 Peterbilt. |
-| CT-17003 | Ferrisdown Haul | Cancelled 2026-10-01 |
-| TS-88120 | Tessivo Labs | Cyber, Tech E&O (retro date 2025-02-01), D&O, CGL. Contacts: Priya Shah, Dan Wu. |
-| TS-91002 | Orrowind AI | D&O and CGL only, policy started 2026-11-01 |
+| CT-20417 (USDOT 9900417) | XYZ Freight | Trucking. Drivers: Marcus Hill, Ana Torres. Units: T1 Cascadia, T2 Peterbilt. |
+| CT-17003 | DEF Haul | Cancelled 2026-10-01 |
+| TS-88120 | ABC Labs | Cyber, Tech E&O (retro date 2025-02-01), D&O, CGL. Contacts: Priya Shah, Dan Wu. |
+| TS-91002 | PQR AI | D&O and CGL only, policy started 2026-11-01 |
 
 ## Design decisions
 

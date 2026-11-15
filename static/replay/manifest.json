@@ -43,8 +43,8 @@
           "file": "06_caller.mp3",
           "who": "caller",
           "voice": "cedar",
-          "text": "Marcus Hill. I drive for Quillmont Freight.",
-          "ms": 2428
+          "text": "Marcus Hill. I drive for XYZ Freight.",
+          "ms": 2989
         },
         "8": {
           "file": "08_agent.mp3",
@@ -78,8 +78,8 @@
           "file": "14_agent.mp3",
           "who": "agent",
           "voice": "marin",
-          "text": "Let me read that back. C, T, 2, 0, 4, 1, 7, Quillmont Freight?",
-          "ms": 6918
+          "text": "Let me read that back. C, T, 2, 0, 4, 1, 7, XYZ Freight?",
+          "ms": 7448
         },
         "15": {
           "file": "15_caller.mp3",
@@ -127,8 +127,8 @@
           "file": "24_caller.mp3",
           "who": "caller",
           "voice": "cedar",
-          "text": "Both of us got towed. Tallowcreek Towing in Sparks has my truck. The trooper gave me a ticket for following too close.",
-          "ms": 8320
+          "text": "Both of us got towed. TUV Towing in Sparks has my truck. The trooper gave me a ticket for following too close.",
+          "ms": 7247
         },
         "26": {
           "file": "26_agent.mp3",
@@ -210,8 +210,8 @@
           "file": "04_caller.mp3",
           "who": "caller",
           "voice": "coral",
-          "text": "I'm okay. Stressed, honestly. This is Priya Shah, CEO of Tessivo Labs.",
-          "ms": 6702
+          "text": "I'm okay. Stressed, honestly. This is Priya Shah, CEO of ABC Labs.",
+          "ms": 7143
         },
         "6": {
           "file": "06_agent.mp3",
@@ -287,15 +287,15 @@
           "file": "22_caller.mp3",
           "who": "caller",
           "voice": "coral",
-          "text": "Our CTO called Vexmoor Security about an hour ago. We haven't called the FBI.",
-          "ms": 5739
+          "text": "Our CTO called GHI Security about an hour ago. We haven't called the FBI.",
+          "ms": 5626
         },
         "24": {
           "file": "24_agent.mp3",
           "who": "agent",
           "voice": "marin",
-          "text": "That's a really common first move. Just pause any new work with Vexmoor until your breach coach confirms they're approved, so those costs are covered. Let me read this back: ransomware found this morning, build servers and Drive encrypted, a 4 bitcoin demand, nothing paid, maybe 40,000 customer records involved, and Vexmoor already called. Anything I missed?",
-          "ms": 24700
+          "text": "That's a really common first move. Just pause any new work with GHI until your breach coach confirms they're approved, so those costs are covered. Let me read this back: ransomware found this morning, build servers and Drive encrypted, a 4 bitcoin demand, nothing paid, maybe 40,000 customer records involved, and GHI already called. Anything I missed?",
+          "ms": 20928
         },
         "25": {
           "file": "25_caller.mp3",
@@ -342,8 +342,8 @@
           "file": "04_caller.mp3",
           "who": "caller",
           "voice": "ash",
-          "text": "Honestly, not great. Dan Wu, CFO at Tessivo Labs. I feel sick about it.",
-          "ms": 7267
+          "text": "Honestly, not great. Dan Wu, CFO at ABC Labs. I feel sick about it.",
+          "ms": 6431
         },
         "6": {
           "file": "06_agent.mp3",
@@ -446,22 +446,22 @@
           "file": "04_caller.mp3",
           "who": "caller",
           "voice": "coral",
-          "text": "I'm fine, thanks. Priya Shah from Tessivo Labs.",
-          "ms": 4028
+          "text": "I'm fine, thanks. Priya Shah from ABC Labs.",
+          "ms": 4061
         },
         "8": {
           "file": "08_caller.mp3",
           "who": "caller",
           "voice": "coral",
-          "text": "Callowmere Logistics. They're saying our routing model's recommendations cost them 750 thousand dollars. The letter came two days ago.",
-          "ms": 9221
+          "text": "LMN Logistics. They're saying our routing model's recommendations cost them 750 thousand dollars. The letter came two days ago.",
+          "ms": 8851
         },
         "10": {
           "file": "10_agent.mp3",
           "who": "agent",
           "voice": "marin",
-          "text": "Okay, that's a big number to see on a letter, and you did the right thing calling now instead of sitting on it. From here, please don't reply to Callowmere or negotiate. Send anything you get to us. When did the issue they're describing actually happen?",
-          "ms": 15453
+          "text": "Okay, that's a big number to see on a letter, and you did the right thing calling now instead of sitting on it. From here, please don't reply to LMN or negotiate. Send anything you get to us. When did the issue they're describing actually happen?",
+          "ms": 14689
         },
         "11": {
           "file": "11_caller.mp3",
@@ -488,8 +488,8 @@
           "file": "16_agent.mp3",
           "who": "agent",
           "voice": "marin",
-          "text": "That's a pretty natural reply, don't worry about it. Just check with us before hiring a lawyer or agreeing to anything, that keeps defense costs covered. Reading it back: demand letter from Callowmere Logistics two days ago, $750,000 in claimed losses tied to model v3 from mid August, and you sent one holding reply. Sound right?",
-          "ms": 23756
+          "text": "That's a pretty natural reply, don't worry about it. Just check with us before hiring a lawyer or agreeing to anything, that keeps defense costs covered. Reading it back: demand letter from LMN Logistics two days ago, $750,000 in claimed losses tied to model v3 from mid August, and you sent one holding reply. Sound right?",
+          "ms": 21058
         },
         "17": {
           "file": "17_caller.mp3",
@@ -502,8 +502,8 @@
           "file": "19_agent.mp3",
           "who": "agent",
           "voice": "marin",
-          "text": "Done. A liability adjuster will call you to talk it through, usually within a business day. Send over the letter, your contract with Callowmere, and your reply. And Priya, this is exactly what the policy is for. You're not handling it alone.",
-          "ms": 14842
+          "text": "Done. A liability adjuster will call you to talk it through, usually within a business day. Send over the letter, your contract with LMN, and your reply. And Priya, this is exactly what the policy is for. You're not handling it alone.",
+          "ms": 15348
         }
       }
     },
@@ -536,8 +536,8 @@
           "file": "04_caller.mp3",
           "who": "caller",
           "voice": "sage",
-          "text": "I'm shaken up, and my shoulder hurts. The door said Quillmont Freight, DOT 9 9 0 0 4 1 7.",
-          "ms": 10661
+          "text": "I'm shaken up, and my shoulder hurts. The door said XYZ Freight, DOT 9 9 0 0 4 1 7.",
+          "ms": 9354
         },
         "5": {
           "file": "05_agent.mp3",
@@ -633,8 +633,8 @@
           "file": "04_caller.mp3",
           "who": "caller",
           "voice": "echo",
-          "text": "I'm fine. Leo Park, founder of Orrowind AI. Policy T S 9 1 0 0 2.",
-          "ms": 7012
+          "text": "I'm fine. Leo Park, founder of PQR AI. Policy T S 9 1 0 0 2.",
+          "ms": 7458
         },
         "9": {
           "file": "09_caller.mp3",
@@ -688,8 +688,8 @@
           "file": "01_caller.mp3",
           "who": "caller",
           "voice": "cedar",
-          "text": "Hi, I'm calling to check on a claim. Marcus Hill, with Quillmont Freight.",
-          "ms": 4107
+          "text": "Hi, I'm calling to check on a claim. Marcus Hill, with XYZ Freight.",
+          "ms": 4391
         },
         "4": {
           "file": "04_agent.mp3",
@@ -709,8 +709,8 @@
           "file": "06_agent.mp3",
           "who": "agent",
           "voice": "marin",
-          "text": "That's C L M, 2 6 0 9 0 2, 4 4 1 7, for Quillmont Freight?",
-          "ms": 7372
+          "text": "That's C L M, 2 6 0 9 0 2, 4 4 1 7, for XYZ Freight?",
+          "ms": 8191
         },
         "7": {
           "file": "07_caller.mp3",
@@ -771,8 +771,8 @@
           "file": "04_caller.mp3",
           "who": "caller",
           "voice": "coral",
-          "text": "Priya Shah, Tessivo Labs.",
-          "ms": 2115
+          "text": "Priya Shah, ABC Labs.",
+          "ms": 2326
         },
         "6": {
           "file": "06_agent.mp3",
@@ -785,8 +785,8 @@
           "file": "07_caller.mp3",
           "who": "caller",
           "voice": "coral",
-          "text": "Brightholm Bank. They want proof of 2 million in cyber and E and O, and to be listed as additional insured on the general liability.",
-          "ms": 7823
+          "text": "JKL Bank. They want proof of 2 million in cyber and E and O, and to be listed as additional insured on the general liability.",
+          "ms": 8912
         },
         "8": {
           "file": "08_agent.mp3",

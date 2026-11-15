@@ -36,7 +36,7 @@
         "agent": "Okay. I'm really glad you're not hurt, and that sounds like a scary couple of hours. We'll take it one step at a time. What's your name, and were you the one driving?"
       },
       {
-        "caller": "Marcus Hill. I drive for Quillmont Freight."
+        "caller": "Marcus Hill. I drive for XYZ Freight."
       },
       {
         "tool": "identify_caller",
@@ -81,7 +81,7 @@
         "caller": "C T 2 0 4 1 7."
       },
       {
-        "agent": "Let me read that back. C, T, 2, 0, 4, 1, 7, Quillmont Freight?"
+        "agent": "Let me read that back. C, T, 2, 0, 4, 1, 7, XYZ Freight?"
       },
       {
         "caller": "Yes."
@@ -89,7 +89,7 @@
       {
         "tool": "lookup_policy",
         "args": {
-          "business_name": "Quillmont Freight",
+          "business_name": "XYZ Freight",
           "policy_number": "CT 20417"
         }
       },
@@ -131,14 +131,14 @@
         "agent": "Okay. Did either vehicle need a tow? And did the trooper write anyone a ticket?"
       },
       {
-        "caller": "Both of us got towed. Tallowcreek Towing in Sparks has my truck. The trooper gave me a ticket for following too close."
+        "caller": "Both of us got towed. TUV Towing in Sparks has my truck. The trooper gave me a ticket for following too close."
       },
       {
         "tool": "update_claim",
         "args": {
           "fields": {
             "towed": true,
-            "tow_yard": "Tallowcreek Towing, Sparks NV",
+            "tow_yard": "TUV Towing, Sparks NV",
             "citation_issued": true
           }
         }
@@ -212,7 +212,7 @@
         "agent": "That's a horrible thing to walk into. Before we get into it, are you okay?"
       },
       {
-        "caller": "I'm okay. Stressed, honestly. This is Priya Shah, CEO of Tessivo Labs."
+        "caller": "I'm okay. Stressed, honestly. This is Priya Shah, CEO of ABC Labs."
       },
       {
         "tool": "identify_caller",
@@ -232,7 +232,7 @@
       {
         "tool": "lookup_policy",
         "args": {
-          "business_name": "Tessivo Labs",
+          "business_name": "ABC Labs",
           "policy_number": "TS-88120"
         }
       },
@@ -306,19 +306,19 @@
         "agent": "Thanks for being straight about that. Breach counsel will help you figure out who needs to be told and by when, so hold off on sending notices or posting anything for now. Have you brought in any outside firm yet?"
       },
       {
-        "caller": "Our CTO called Vexmoor Security about an hour ago. We haven't called the FBI."
+        "caller": "Our CTO called GHI Security about an hour ago. We haven't called the FBI."
       },
       {
         "tool": "update_claim",
         "args": {
           "fields": {
-            "vendor_engaged": "Vexmoor Security",
+            "vendor_engaged": "GHI Security",
             "law_enforcement_notified": false
           }
         }
       },
       {
-        "agent": "That's a really common first move. Just pause any new work with Vexmoor until your breach coach confirms they're approved, so those costs are covered. Let me read this back: ransomware found this morning, build servers and Drive encrypted, a 4 bitcoin demand, nothing paid, maybe 40,000 customer records involved, and Vexmoor already called. Anything I missed?"
+        "agent": "That's a really common first move. Just pause any new work with GHI until your breach coach confirms they're approved, so those costs are covered. Let me read this back: ransomware found this morning, build servers and Drive encrypted, a 4 bitcoin demand, nothing paid, maybe 40,000 customer records involved, and GHI already called. Anything I missed?"
       },
       {
         "caller": "No, that's it."
@@ -365,7 +365,7 @@
         "agent": "Okay, we'll get on it right away. First, how are you doing?"
       },
       {
-        "caller": "Honestly, not great. Dan Wu, CFO at Tessivo Labs. I feel sick about it."
+        "caller": "Honestly, not great. Dan Wu, CFO at ABC Labs. I feel sick about it."
       },
       {
         "tool": "identify_caller",
@@ -385,7 +385,7 @@
       {
         "tool": "lookup_policy",
         "args": {
-          "business_name": "Tessivo Labs Inc",
+          "business_name": "ABC Labs Inc",
           "policy_number": "TS88120"
         }
       },
@@ -489,7 +489,7 @@
         "agent": "You did the right thing calling. Before we get into it, how are you doing?"
       },
       {
-        "caller": "I'm fine, thanks. Priya Shah from Tessivo Labs."
+        "caller": "I'm fine, thanks. Priya Shah from ABC Labs."
       },
       {
         "tool": "identify_caller",
@@ -503,7 +503,7 @@
       {
         "tool": "lookup_policy",
         "args": {
-          "business_name": "Tessivo Labs",
+          "business_name": "ABC Labs",
           "policy_number": "TS-88120"
         }
       },
@@ -514,14 +514,14 @@
         }
       },
       {
-        "caller": "Callowmere Logistics. They're saying our routing model's recommendations cost them 750 thousand dollars. The letter came two days ago."
+        "caller": "LMN Logistics. They're saying our routing model's recommendations cost them 750 thousand dollars. The letter came two days ago."
       },
       {
         "tool": "update_claim",
         "args": {
           "fields": {
             "matter_type": "demand_letter",
-            "claimant_name": "Callowmere Logistics",
+            "claimant_name": "LMN Logistics",
             "claim_received_date": "@d-48h",
             "allegation": "ai_output",
             "amount_demanded": 750000,
@@ -530,7 +530,7 @@
         }
       },
       {
-        "agent": "Okay, that's a big number to see on a letter, and you did the right thing calling now instead of sitting on it. From here, please don't reply to Callowmere or negotiate. Send anything you get to us. When did the issue they're describing actually happen?"
+        "agent": "Okay, that's a big number to see on a letter, and you did the right thing calling now instead of sitting on it. From here, please don't reply to LMN or negotiate. Send anything you get to us. When did the issue they're describing actually happen?"
       },
       {
         "caller": "Mid August, when we shipped version 3 of the model."
@@ -559,7 +559,7 @@
         }
       },
       {
-        "agent": "That's a pretty natural reply, don't worry about it. Just check with us before hiring a lawyer or agreeing to anything, that keeps defense costs covered. Reading it back: demand letter from Callowmere Logistics two days ago, $750,000 in claimed losses tied to model v3 from mid August, and you sent one holding reply. Sound right?"
+        "agent": "That's a pretty natural reply, don't worry about it. Just check with us before hiring a lawyer or agreeing to anything, that keeps defense costs covered. Reading it back: demand letter from LMN Logistics two days ago, $750,000 in claimed losses tied to model v3 from mid August, and you sent one holding reply. Sound right?"
       },
       {
         "caller": "Yes."
@@ -571,7 +571,7 @@
         }
       },
       {
-        "agent": "Done. A liability adjuster will call you to talk it through, usually within a business day. Send over the letter, your contract with Callowmere, and your reply. And Priya, this is exactly what the policy is for. You're not handling it alone."
+        "agent": "Done. A liability adjuster will call you to talk it through, usually within a business day. Send over the letter, your contract with LMN, and your reply. And Priya, this is exactly what the policy is for. You're not handling it alone."
       }
     ]
   },
@@ -607,7 +607,7 @@
         "agent": "Oh no. Are you okay? Is anyone hurt?"
       },
       {
-        "caller": "I'm shaken up, and my shoulder hurts. The door said Quillmont Freight, DOT 9 9 0 0 4 1 7."
+        "caller": "I'm shaken up, and my shoulder hurts. The door said XYZ Freight, DOT 9 9 0 0 4 1 7."
       },
       {
         "agent": "Oh, I'm sorry. Getting hit by a truck is frightening, and it's normal to still feel shaky hours later. Has someone looked at that shoulder? If not, please get that done first, I can call you back. If you're okay to keep going, can I get your name and a good number?"
@@ -628,7 +628,7 @@
       {
         "tool": "lookup_policy",
         "args": {
-          "business_name": "Quillmont Freight",
+          "business_name": "XYZ Freight",
           "usdot_number": "9900417"
         }
       },
@@ -647,7 +647,7 @@
             "location": "I-580 eastbound near Grand Ave, Oakland",
             "state": "CA",
             "description": "Truck merged into my lane and sideswiped my car.",
-            "insured_vehicle_description": "White Freightliner, Quillmont Freight on door, USDOT 9900417",
+            "insured_vehicle_description": "White Freightliner, XYZ Freight on door, USDOT 9900417",
             "claimant_vehicle": "2019 Toyota RAV4"
           }
         }
@@ -730,7 +730,7 @@
         "agent": "Thanks for calling it in quickly. Before we get into it, are you okay?"
       },
       {
-        "caller": "I'm fine. Leo Park, founder of Orrowind AI. Policy T S 9 1 0 0 2."
+        "caller": "I'm fine. Leo Park, founder of PQR AI. Policy T S 9 1 0 0 2."
       },
       {
         "tool": "identify_caller",
@@ -744,7 +744,7 @@
       {
         "tool": "lookup_policy",
         "args": {
-          "business_name": "Orrowind AI",
+          "business_name": "PQR AI",
           "policy_number": "TS-91002"
         }
       },
@@ -818,7 +818,7 @@
         "agent": "Thanks for calling Claimline claims, this line is recorded. What can I help you with today?"
       },
       {
-        "caller": "Hi, I'm calling to check on a claim. Marcus Hill, with Quillmont Freight."
+        "caller": "Hi, I'm calling to check on a claim. Marcus Hill, with XYZ Freight."
       },
       {
         "tool": "set_call_reason",
@@ -841,7 +841,7 @@
         "caller": "C L M 2 6 0 9 0 2 4 4 1 7."
       },
       {
-        "agent": "That's C L M, 2 6 0 9 0 2, 4 4 1 7, for Quillmont Freight?"
+        "agent": "That's C L M, 2 6 0 9 0 2, 4 4 1 7, for XYZ Freight?"
       },
       {
         "caller": "Yes."
@@ -850,7 +850,7 @@
         "tool": "lookup_claim",
         "args": {
           "claim_number": "CLM-260902-4417",
-          "business_name": "Quillmont Freight"
+          "business_name": "XYZ Freight"
         }
       },
       {
@@ -897,7 +897,7 @@
         "agent": "We can help with that. Who am I speaking with?"
       },
       {
-        "caller": "Priya Shah, Tessivo Labs."
+        "caller": "Priya Shah, ABC Labs."
       },
       {
         "tool": "identify_caller",
@@ -910,7 +910,7 @@
         "agent": "Thanks, Priya. Who should the certificate go to, and do they need specific limits, or to be named as additional insured?"
       },
       {
-        "caller": "Brightholm Bank. They want proof of 2 million in cyber and E and O, and to be listed as additional insured on the general liability."
+        "caller": "JKL Bank. They want proof of 2 million in cyber and E and O, and to be listed as additional insured on the general liability."
       },
       {
         "agent": "Got it. One heads up so there are no surprises on Friday: I can't confirm limits myself, but the certificates team will check those amounts against your policy and tell you right away if anything needs to change."
@@ -919,7 +919,7 @@
         "tool": "create_service_request",
         "args": {
           "topic": "certificate_request",
-          "details": "COI for Brightholm Bank: proof of $2M cyber and $2M Tech E&O; Brightholm as additional insured on CGL.",
+          "details": "COI for JKL Bank: proof of $2M cyber and $2M Tech E&O; JKL as additional insured on CGL.",
           "deadline": "Friday"
         }
       },

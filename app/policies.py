@@ -9,7 +9,7 @@ POLICIES: dict[str, dict] = {
     # Small trucking fleet: auto liability, physical damage, cargo (occurrence forms)
     "CT20417": {
         "policy_number": "CT-20417",
-        "insured": "Quillmont Freight LLC",
+        "insured": "XYZ Freight LLC",
         "program": "trucking",
         "status": "active",
         "usdot": "9900417",
@@ -31,7 +31,7 @@ POLICIES: dict[str, dict] = {
     # Cancelled trucking policy, for the "loss after cancellation" case
     "CT17003": {
         "policy_number": "CT-17003",
-        "insured": "Ferrisdown Haul Co",
+        "insured": "DEF Haul Co",
         "program": "trucking",
         "status": "cancelled",
         "cancel_date": date(2026, 10, 1),
@@ -50,7 +50,7 @@ POLICIES: dict[str, dict] = {
     # Series A startup with the full stack (claims-made liability lines)
     "TS88120": {
         "policy_number": "TS-88120",
-        "insured": "Tessivo Labs Inc",
+        "insured": "ABC Labs Inc",
         "program": "startup",
         "status": "active",
         "term_start": date(2026, 4, 1),
@@ -78,7 +78,7 @@ POLICIES: dict[str, dict] = {
     # Brand-new seed policy, D&O and CGL only (no cyber)
     "TS91002": {
         "policy_number": "TS-91002",
-        "insured": "Orrowind AI Inc",
+        "insured": "PQR AI Inc",
         "program": "startup",
         "status": "active",
         "term_start": date(2026, 11, 1),
@@ -108,7 +108,7 @@ EXISTING_CLAIMS = [
 ]
 
 # Approved incident-response vendors (fictional)
-PANEL_VENDORS = ["Brackenhale IR", "Wrenfield Forensics", "Ashcombe Breach Counsel"]
+PANEL_VENDORS = ["RST IR", "UVW Forensics", "OPQ Breach Counsel"]
 
 _SUFFIXES = re.compile(r"\b(llc|inc|incorporated|corp|corporation|co|company|ltd)\b")
 
@@ -121,7 +121,9 @@ def normalize_policy_number(raw: str | None) -> str:
 def normalize_name(raw: str | None) -> str:
     s = re.sub(r"[^a-z0-9 ]", " ", (raw or "").lower())
     s = _SUFFIXES.sub(" ", s)
-    return " ".join(s.split())
+    # Speech-to-text spells initials out ("x y z freight"); join them back ("xyz freight").
+    s = re.sub(r"\b(?:[a-z] )+[a-z]\b", lambda m: m.group(0).replace(" ", ""), " ".join(s.split()))
+    return s
 
 
 def name_matches(spoken: str | None, insured: str) -> bool:
