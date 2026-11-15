@@ -47,7 +47,12 @@
       </div>
       <p class="fineprint">Use headphones so the agent doesn't hear itself. Calls end after <span id="maxMin">6</span> minutes.</p>
       <p id="startError" class="error hidden" role="alert"></p>
-      <p class="fineprint">No microphone? <button id="replayBtn" class="btn-link">Play a recorded call</button> for the caller you picked.</p>
+
+      <section class="recorded" aria-labelledby="recordedHead">
+        <h2 id="recordedHead">Or listen to a recorded call</h2>
+        <p class="fineprint">No microphone needed. The script is fixed, but every step runs through the real claims engine.</p>
+        <ul id="recorded" class="recorded-list"></ul>
+      </section>
     </div>
 
     <figure class="preview" aria-label="Example of a claim file built during a call">

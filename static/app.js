@@ -3,7 +3,7 @@
 
 const $ = (id) => document.getElementById(id);
 const els = {
-  scenario: $("scenarioSelect"), replay: $("replayBtn"), newCall: $("newCallBtn"),
+  scenario: $("scenarioSelect"), recorded: $("recorded"), newCall: $("newCallBtn"),
   accessCode: $("accessCode"), startError: $("startError"), personas: $("personas"), role: $("roleCard"), maxMin: $("maxMin"),
   start: $("startBtn"), end: $("endBtn"), callState: $("callState"),
   transcript: $("transcript"), textForm: $("textForm"), textInput: $("textInput"), textBtn: $("textBtn"),
@@ -336,10 +336,10 @@ function renderPersonas() {
     r.addEventListener("change", () => { persona = PERSONAS.find((p) => p.id === r.value); }));
 }
 
-function renderRole(mode) {
+function renderRole(mode, rec) {
   els.role.innerHTML = mode === "replay"
-    ? `<strong>Recorded call: ${esc(persona.name)}, ${esc(persona.gist)}.</strong>
-       <p>The script is fixed, but every step runs through the real claims engine, so the form is filled in live.</p>`
+    ? `<strong>Recorded call: ${esc(rec.title)}.</strong>
+       <p>Caller: ${esc(rec.who)}. The script is fixed, but every step runs through the real claims engine, so the form is filled in live.</p>`
     : `<strong>You're ${esc(persona.name)}, ${esc(persona.gist)}.</strong>
        <p>${esc(persona.ref)}. ${esc(persona.story)}</p>
        <p>Start with "${esc(persona.opener)}" Then answer whatever it asks.</p>`;
@@ -371,38 +371,120 @@ async function loadConfig() {
 
 // ------------------------------------------------------------------ replay
 
+// Who is on each recorded call, as shown in the list.
+const RECORDED_CALLERS = {
+  trucking_crash: "Marcus Hill, truck driver at Ridgeline Freight",
+  ransomware: "Priya Shah, Lumen Labs",
+  wire_fraud: "Dan Wu, CFO at Lumen Labs",
+  eo_ai_demand: "Priya Shah, Lumen Labs",
+  third_party: "Rosa Delgado, the other driver",
+  edge_no_coverage: "Leo Park, founder of Northwind AI",
+  claim_status: "Marcus Hill, following up on a claim",
+  coi_request: "Priya Shah, Lumen Labs",
+};
+let scenarioList = [];
+
+function setRecordedDisabled(off) {
+  els.recorded.querySelectorAll("button").forEach((b) => { b.disabled = off; });
+}
+
+function callLength(id) {
+  const lines = Object.values(replayManifest?.scenarios?.[id]?.lines || {});
+  if (!lines.length) return "";
+  const s = Math.round(lines.reduce((t, l) => t + l.ms + 300, 0) / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+function renderRecorded() {
+  els.recorded.innerHTML = scenarioList.map((sc) => `
+    <li><button class="rec" data-id="${esc(sc.id)}">
+      <span class="rec-title">${esc(sc.title)}</span>
+      <span class="rec-len">${esc(callLength(sc.id))}</span>
+      <span class="rec-who">${esc(RECORDED_CALLERS[sc.id] || "")}</span>
+    </button></li>`).join("");
+  els.recorded.querySelectorAll("button").forEach((b) =>
+    b.addEventListener("click", () => { els.scenario.value = b.dataset.id; replay(); }));
+}
+
+async function loadManifest() {
+  if (replayManifest !== null) return;
+  try {
+    const r = await fetch("/static/replay/manifest.json", { cache: "no-cache" });
+    replayManifest = r.ok ? await r.json() : {};
+  } catch { replayManifest = {}; }
+}
+
 async function loadScenarios() {
-  const list = await (await fetch("/api/scenarios")).json();
+  const [list] = await Promise.all([(await fetch("/api/scenarios")).json(), loadManifest()]);
+  scenarioList = list;
   els.scenario.innerHTML = list.map((s) => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join("");
+  renderRecorded();
   const auto = params.get("replay"); // ?replay=trucking_crash starts that scenario on load
   if (auto && list.some((s) => s.id === auto)) {
-    persona = PERSONAS.find((p) => p.scenario === auto) || persona;
-    renderPersonas();
     els.scenario.value = auto;
     replay();
   }
+}
+
+// Pre-recorded voices for replays (scripts/make_replay_audio.py). Missing audio falls back to silent timing.
+var replayManifest = null;
+let replayAudio = null;
+
+async function loadReplayClips(scenarioId, steps) {
+  await loadManifest();
+  const lines = replayManifest.scenarios?.[scenarioId]?.lines || {};
+  const clips = {};
+  await Promise.all(steps.map((step, i) => {
+    const line = lines[String(i)];
+    const text = step.caller || step.agent;
+    if (!line || line.text !== text) return null; // script changed since recording
+    const audio = new Audio(`/static/replay/${scenarioId}/${line.file}`);
+    audio.preload = "auto";
+    clips[i] = audio;
+    return new Promise((ok) => {
+      audio.addEventListener("canplaythrough", ok, { once: true });
+      audio.addEventListener("error", () => { delete clips[i]; ok(); }, { once: true });
+      setTimeout(ok, 4000);
+    });
+  }));
+  return clips;
+}
+
+function playClip(audio) {
+  // Resolves when the clip ends or the replay is stopped; false if the browser refused to play.
+  return new Promise((done) => {
+    replayAudio = audio;
+    audio.playbackRate = Math.min(2, SPEED);
+    const finish = (ok) => { audio.onended = audio.onpause = null; replayAudio = null; done(ok); };
+    audio.onended = () => finish(true);
+    audio.onpause = () => finish(true);
+    audio.play().catch(() => finish(false));
+  });
 }
 
 async function replay() {
   if (replaying) return;
   const r = await fetch(`/api/demo/${els.scenario.value}`, { method: "POST" });
   const demo = await r.json();
+  const clips = await loadReplayClips(els.scenario.value, demo.steps);
   clearAll();
   setView("call");
-  renderRole("replay");
+  const sc = scenarioList.find((x) => x.id === els.scenario.value) || { title: "" };
+  renderRole("replay", { title: sc.title, who: RECORDED_CALLERS[sc.id] || "" });
   sessionId = demo.session_id;
   await freshSnapshot();
   replaying = true;
   els.end.disabled = false;
   els.end.textContent = "Stop";
   setCallState("Playing a recorded call", "");
-  for (const step of demo.steps) {
+  for (const [i, step] of demo.steps.entries()) {
     if (!replaying) break;
     if (step.caller || step.agent) {
       const who = step.caller ? "caller" : "agent";
       const text = step.caller || step.agent;
       addLine(who, text);
-      await sleep(Math.min(3200, Math.max(900, text.length * 28)));
+      const played = clips[i] && SPEED <= 2 ? await playClip(clips[i]) : false;
+      await sleep(played ? 300 : Math.min(3200, Math.max(900, text.length * 28)));
     } else if (step.tool) {
       const { tool_result, claim } = await callTool(step.tool, step.args);
       logTool(step.tool, step.args, tool_result);
@@ -477,14 +559,14 @@ async function startCall() {
     return;
   }
   els.start.disabled = true;
-  els.replay.disabled = true;
+  setRecordedDisabled(true);
 
   // Ask for the mic before creating a paid session, so a denied mic costs nothing.
   try {
     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch {
     showStartError("The microphone is blocked. Allow it from the icon in the address bar and press Start again, or play a recorded call.");
-    els.start.disabled = false; els.replay.disabled = false;
+    els.start.disabled = false; setRecordedDisabled(false);
     return;
   }
 
@@ -500,7 +582,7 @@ async function startCall() {
   } catch (err) {
     micStream.getTracks().forEach((t) => t.stop()); micStream = null;
     showStartError(err.message);
-    els.start.disabled = false; els.replay.disabled = false;
+    els.start.disabled = false; setRecordedDisabled(false);
     return;
   }
 
@@ -552,6 +634,7 @@ async function startCall() {
 
 function endCall() {
   if (replaying) { replaying = false; }
+  if (replayAudio) { replayAudio.pause(); replayAudio = null; }
   if (callTimer) { clearTimeout(callTimer); callTimer = null; }
   if (filler) { filler.reset(); filler = null; }
   if (dc) dc.close();
@@ -560,7 +643,7 @@ function endCall() {
   dc = pc = micStream = null;
   setCallState("Call ended", "");
   els.start.disabled = false;
-  els.replay.disabled = false;
+  setRecordedDisabled(false);
   els.end.disabled = true;
   els.end.textContent = "End call";
   els.textInput.disabled = true;
@@ -573,7 +656,6 @@ function newCall() {
   setView("welcome");
 }
 
-els.replay.addEventListener("click", () => { els.scenario.value = persona.scenario; replay(); });
 els.start.addEventListener("click", startCall);
 els.end.addEventListener("click", endCall);
 els.newCall.addEventListener("click", newCall);

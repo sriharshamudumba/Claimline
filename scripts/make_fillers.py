@@ -78,7 +78,8 @@ def write_wav(path: Path, pcm: bytes) -> None:
         w.writeframes(pcm)
 
 
-async def record(line: str, model: str, voice: str, key: str, url: str | None) -> tuple[bytes, str]:
+async def record(line: str, model: str, voice: str, key: str, url: str | None,
+                 instructions: str = ACTOR) -> tuple[bytes, str]:
     import websockets
 
     ws_url = url or f"wss://api.openai.com/v1/realtime?model={model}"
@@ -86,7 +87,7 @@ async def record(line: str, model: str, voice: str, key: str, url: str | None) -
     async with websockets.connect(ws_url, additional_headers=headers, max_size=None) as ws:
         await ws.send(json.dumps({"type": "session.update", "session": {
             "type": "realtime",
-            "instructions": ACTOR,
+            "instructions": instructions,
             "output_modalities": ["audio"],
             "audio": {"output": {"voice": voice, "format": {"type": "audio/pcm", "rate": RATE}}},
         }}))

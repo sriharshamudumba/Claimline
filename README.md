@@ -123,6 +123,7 @@ People cover a pause with "mm-hmm" or "one moment". The agent does the same, but
 - Barge-in stops the clip instantly. Agent audio fades it out in about 100 ms.
 - The model is told not to open its reply with a filler of its own, so the two don't stack.
 - Clips are recorded once in the agent's own model and voice (`python scripts/make_fillers.py`), so they sound like the same person.
+- Recorded calls have audio too: `python scripts/make_replay_audio.py` reads every scripted line in two voices (agent in the live voice, each caller in their own) and writes `static/replay/`. Lines without audio fall back to silent timing.
 - The header shows the last reply latency, the median (p50), and the filler count for the call.
 
 The timing logic lives in `static/fillers.js`, with injected clock and timers, and is unit-tested in `tests/fillers.test.js` (`node tests/fillers.test.js`).
