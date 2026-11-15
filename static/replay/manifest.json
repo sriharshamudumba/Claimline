@@ -322,98 +322,98 @@
           "who": "agent",
           "voice": "marin",
           "text": "Thanks for calling Claimline claims, this line is recorded. What can I help you with today?",
-          "ms": 4865
+          "ms": 5307
         },
         "1": {
           "file": "01_caller.mp3",
           "who": "caller",
           "voice": "ash",
           "text": "I think we wired money to a scammer. I need to report it.",
-          "ms": 3746
+          "ms": 4428
         },
         "3": {
           "file": "03_agent.mp3",
           "who": "agent",
           "voice": "marin",
           "text": "Okay, we'll get on it right away. First, how are you doing?",
-          "ms": 3629
+          "ms": 4250
         },
         "4": {
           "file": "04_caller.mp3",
           "who": "caller",
           "voice": "ash",
           "text": "Honestly, not great. Dan Wu, CFO at Lumen Labs. I feel sick about it.",
-          "ms": 7182
+          "ms": 7078
         },
         "6": {
           "file": "06_agent.mp3",
           "who": "agent",
           "voice": "marin",
           "text": "Dan, I'm really sorry. I hear that a lot on these calls, and I want you to know these scams are built to fool careful people. You caught it and called fast, which is exactly what gives us the best shot. Take a breath. We'll go one step at a time, and if you need a minute, say so.",
-          "ms": 18176
+          "ms": 20753
         },
         "7": {
           "file": "07_caller.mp3",
           "who": "caller",
           "voice": "ash",
           "text": "Thanks. Okay. I'm ready.",
-          "ms": 3195
+          "ms": 2628
         },
         "10": {
           "file": "10_caller.mp3",
           "who": "caller",
           "voice": "ash",
           "text": "We paid a vendor invoice yesterday morning, 186,400 dollars. The vendor just called saying they never got it. Someone changed the bank details by email.",
-          "ms": 18207
+          "ms": 11406
         },
         "12": {
           "file": "12_agent.mp3",
           "who": "agent",
           "voice": "marin",
           "text": "Okay. Here's what matters most. Right after we hang up, call your bank's fraud line and ask them to recall the wire. The best chance of getting money back is in the first 72 hours, and you're still inside that. Then file at ic3.gov, that's how the FBI tries to freeze it on the other end. Have you reached the bank yet?",
-          "ms": 20201
+          "ms": 18863
         },
         "13": {
           "file": "13_caller.mp3",
           "who": "caller",
           "voice": "ash",
           "text": "Not yet. It was a domestic wire, to a bank in Texas.",
-          "ms": 4637
+          "ms": 5027
         },
         "15": {
           "file": "15_agent.mp3",
           "who": "agent",
           "voice": "marin",
           "text": "That's fine, you'll do it the second we're done. Do you know how they got in? Is anything else affected?",
-          "ms": 5954
+          "ms": 5339
         },
         "16": {
           "file": "16_caller.mp3",
           "who": "caller",
           "voice": "ash",
           "text": "Looks like someone got into my email. Nothing else is down. We haven't hired anyone or called police.",
-          "ms": 8094
+          "ms": 7309
         },
         "18": {
           "file": "18_agent.mp3",
           "who": "agent",
           "voice": "marin",
           "text": "Change that email password and turn on two-factor, but keep the fake emails, we'll need them. Let me check I have it: $186,400 sent by domestic wire yesterday morning, to bank details changed by email, found out an hour ago, bank not called yet. Right?",
-          "ms": 18366
+          "ms": 16316
         },
         "19": {
           "file": "19_caller.mp3",
           "who": "caller",
           "voice": "ash",
           "text": "Yes.",
-          "ms": 492
+          "ms": 616
         },
         "21": {
           "file": "21_agent.mp3",
           "who": "agent",
           "voice": "marin",
           "text": "Okay, it's in. A breach coach will call you shortly to walk through the rest. When you have them, send the wire confirmation, the bank's recall reference, and your IC3 number. And Dan, go make that bank call. You're doing everything right.",
-          "ms": 13734
+          "ms": 15022
         }
       }
     },
