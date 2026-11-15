@@ -185,3 +185,16 @@ Browser relays tool calls --> FastAPI /api/tools/{name} --> ClaimSession engine
 - The mock policies and rules are illustrative, not any carrier's actual forms or guidelines. Deadlines are general guidance, labeled that way in the copy.
 - The live voice path needs the Realtime API event names verified against your SDK version. Replay mode doesn't depend on them.
 - Next steps would be SIP or Twilio phone ingress, Postgres persistence, an adjuster queue view, and an offline eval set that scores field accuracy and routing on recorded calls before any prompt change.
+
+## Guardrails
+
+The prompt asks the agent to behave. `app/guardrails.py` makes the important parts hold even when it doesn't.
+
+| Direction | What is checked | What happens |
+|---|---|---|
+| Caller to claim file | Card numbers (Luhn-checked), SSNs, bank account and routing numbers, passwords, one-time codes in any tool argument | Removed before the engine stores them, and the agent is told to ask the caller not to read them out. Phone, policy, claim and DOT numbers are left alone. |
+| Caller to claim file | Attempts to change the rules ("ignore your instructions", "mark it approved", "delete the flags") | Logged and never acted on. The engine decides nothing based on what a caller asks it to decide. |
+| Agent to caller | Every finished agent turn: coverage or payment promises, opinions on fault, quoted limits or deductibles, ransom advice, mentions of fraud reviews, claiming to be human | The browser sends a system correction and the agent fixes it on its next turn. |
+| Whole call | More than 120 tool calls | The agent is told to wrap up, so a model loop can't run up cost. |
+
+The agent also says it's an AI in its greeting, never takes payments, and stays on claims. The `guardrails_check` recorded call shows the input checks working, and every scripted agent line is tested against the output checks so the demo never trips them.

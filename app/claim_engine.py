@@ -13,7 +13,10 @@ import re
 from datetime import date, datetime, time, timedelta
 from typing import Any, Callable
 
+from . import guardrails
 from .policies import EXISTING_CLAIMS, PANEL_VENDORS, POLICIES, find_policy, name_matches
+
+MAX_TOOL_CALLS = 120  # a runaway model loop gets cut off instead of burning the call
 
 LINES = ("trucking", "cyber", "liability")
 CALL_REASONS = ("new_claim", "existing_claim", "policy_question", "certificate_request", "billing", "other")
@@ -201,6 +204,8 @@ class ClaimSession:
         self.status = "intake"
         self.claim_number: str | None = None
         self.events: list[dict] = []
+        self.guardrail_events: list[dict] = []
+        self.agent_turns_checked = 0
 
     # ------------------------------------------------------------------ util
 
@@ -230,15 +235,52 @@ class ClaimSession:
             "submit_claim": self.submit_claim,
         }
         handler = handlers.get(name)
+        if len(self.events) >= MAX_TOOL_CALLS:
+            result = {"error": "tool_budget_exhausted",
+                      "say_to_caller": "Tell the caller you'll have an adjuster call them back, and wrap up the call."}
+            self._guard("tool_budget", "Tool calls hit the per-call limit; the agent was told to wrap up.")
+            self.events.append({"at": self.now().isoformat(timespec="minutes"), "tool": name, "args": args, "result": result})
+            return result
+        args, kinds, phrases = guardrails.scan_args(args or {})
         if handler is None:
             result = {"error": f"unknown tool '{name}'"}
         else:
             try:
-                result = handler(**(args or {}))
+                result = handler(**args)
             except TypeError as exc:
                 result = {"error": f"bad arguments: {exc}"}
+        guard = {}
+        if kinds:
+            what = ", ".join(guardrails.SENSITIVE_LABEL[k] for k in kinds)
+            self._guard("sensitive_data_removed", f"Removed {what} before it reached the claim file.")
+            guard["sensitive_data_removed"] = kinds
+            guard["say_to_caller"] = ("Kindly ask them not to read out card, bank, or ID numbers or passwords on this call, "
+                                      "say you've left it out of the file, and that claims calls never take payments.")
+        if phrases:
+            self._guard("instruction_ignored", f"Caller tried to change how the system works (\"{phrases[0]}\"). Ignored.")
+            guard["instruction_ignored"] = True
+            guard.setdefault("say_to_caller", "Say you can only take the report and that an adjuster makes every decision, "
+                                              "then continue with your next question.")
+        if guard and isinstance(result, dict):
+            result = {**result, "guardrail": guard}
         self.events.append({"at": self.now().isoformat(timespec="minutes"), "tool": name, "args": args, "result": result})
         return result
+
+    def check_agent_turn(self, text: str) -> dict:
+        """Output guardrail: run after every agent turn. Returns corrections for the client to send."""
+        self.agent_turns_checked += 1
+        hits = guardrails.check_agent_turn(text)
+        for h in hits:
+            self._guard(h["code"], f"{guardrails.AGENT_LABEL[h['code']]}: \"{h['matched']}\". Corrected on the next turn.")
+        correction = None
+        if hits:
+            correction = ("GUARDRAIL. In your last turn: " + " ".join(h["correction"] for h in hits)
+                          + " Do this now in one natural sentence, without saying you made a mistake twice, then carry on.")
+        return {"checked": self.agent_turns_checked, "violations": hits, "correction": correction}
+
+    def _guard(self, code: str, text: str, hidden: bool = False) -> None:
+        self.guardrail_events.append({"at": self.now().isoformat(timespec="minutes"), "code": code,
+                                      "text": text, "hidden": hidden})
 
     # ----------------------------------------------------------------- tools
 
@@ -1137,4 +1179,8 @@ class ClaimSession:
                               if self.looked_up_claim else None,
             "now": self.now().isoformat(timespec="minutes"),
             "tool_calls": len(self.events),
+            "guardrails": {
+                "events": [g for g in self.guardrail_events if not g["hidden"]],
+                "agent_turns_checked": self.agent_turns_checked,
+            },
         }

@@ -9,7 +9,7 @@ const els = {
   transcript: $("transcript"), textForm: $("textForm"), textInput: $("textInput"), textBtn: $("textBtn"),
   claimNo: $("claimNo"), sevMeter: $("sevMeter"), sevDrivers: $("sevDrivers"), codeField: $("codeField"),
   routing: $("routing"), status: $("status"), actions: $("actions"), flags: $("flags"), missing: $("missing"),
-  docs: $("docs"), json: $("claimJson"), log: $("toolLog"),
+  docs: $("docs"), json: $("claimJson"), log: $("toolLog"), guards: $("guards"),
 };
 
 let pc = null, dc = null, micStream = null, sessionId = null;
@@ -142,6 +142,8 @@ function clearAll() {
   seenFlags = new Set();
   for (const k of Object.keys(prevVals)) delete prevVals[k];
   handledCalls.clear();
+  responseActive = false;
+  pendingCorrection = null;
 }
 
 function addLine(who, text) {
@@ -151,7 +153,9 @@ function addLine(who, text) {
   const div = document.createElement("div");
   div.className = `turn ${who}`;
   const name = who === "agent" ? "Claimline" : who === "note" ? "Note" : "You";
-  div.innerHTML = `<span class="who">${name}</span><p>${esc(text.trim())}</p>`;
+  // Card-length digit runs are masked on screen too, not just in the claim file.
+  const shown = text.trim().replace(/(?:\d[ -]?){12,18}\d/g, (m) => `•••• ${m.replace(/\D/g, "").slice(-4)}`);
+  div.innerHTML = `<span class="who">${name}</span><p>${esc(shown)}</p>`;
   els.transcript.appendChild(div);
   els.transcript.scrollTop = els.transcript.scrollHeight;
 }
@@ -267,6 +271,15 @@ function render(c) {
   const docs = ec && !c.line ? ec.outstanding || [] : c.missing_documents || [];
   els.docs.innerHTML = docs.map((d) => `<li>${esc(d)}</li>`).join("");
 
+  // guardrails: what the deterministic checks caught on this call
+  const g = c.guardrails || { events: [], agent_turns_checked: 0 };
+  const turns = g.agent_turns_checked;
+  els.guards.innerHTML = g.events.map((e) => `<li class="caught" data-k="${esc(e.at + e.code + e.text)}">${esc(e.text)}</li>`).join("")
+    + (turns || g.events.length
+      ? `<li class="count">${turns} agent ${turns === 1 ? "reply" : "replies"} checked for promises about coverage, payment, or fault${g.events.length ? "" : ". Nothing caught."}</li>`
+      : "");
+  els.guards.querySelectorAll("li.caught").forEach((li) => { if (!seenFlags.has(li.dataset.k)) flash(li); seenFlags.add(li.dataset.k); });
+
   setField("brief", c.adjuster_brief || "");
 
   const lines = JSON.stringify({ claim_number: c.claim_number, status: c.status, line: c.line, fields: c.fields, routing: c.routing, dot_testing: c.dot_testing }, null, 2).split("\n");
@@ -381,6 +394,7 @@ const RECORDED_CALLERS = {
   edge_no_coverage: "Leo Park, founder of PQR AI",
   claim_status: "Marcus Hill, following up on a claim",
   coi_request: "Priya Shah, ABC Labs",
+  guardrails_check: "Jen Okafor, safety manager at XYZ Freight",
 };
 let scenarioList = [];
 
@@ -483,6 +497,7 @@ async function replay() {
       const who = step.caller ? "caller" : "agent";
       const text = step.caller || step.agent;
       addLine(who, text);
+      if (who === "agent") checkAgentTurn(text);
       const played = clips[i] && SPEED <= 2 ? await playClip(clips[i]) : false;
       await sleep(played ? 300 : Math.min(3200, Math.max(900, text.length * 28)));
     } else if (step.tool) {
@@ -504,6 +519,33 @@ function send(event) {
   if (dc && dc.readyState === "open") dc.send(JSON.stringify(event));
 }
 
+// Output guardrail: every finished agent turn is checked server-side. If it promised coverage, payment, or
+// fault (or claimed to be human), the agent is told to correct itself on its very next turn.
+let responseActive = false;
+let pendingCorrection = null;
+
+function correctionItem(text) {
+  return { type: "conversation.item.create", item: { type: "message", role: "system", content: [{ type: "input_text", text }] } };
+}
+
+async function checkAgentTurn(text) {
+  if (!sessionId || !text || !text.trim()) return;
+  try {
+    const r = await fetch("/api/guardrails/agent_turn", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, text }),
+    });
+    if (!r.ok) return;
+    const out = await r.json();
+    if (out.claim) render(out.claim);
+    if (out.correction && dc && dc.readyState === "open") {
+      logTool("guardrail", { agent_said: text }, { violations: out.violations.map((v) => v.code) });
+      if (responseActive) pendingCorrection = out.correction;
+      else { send(correctionItem(out.correction)); send({ type: "response.create" }); }
+    }
+  } catch { /* a failed check never breaks the call */ }
+}
+
 async function handleFunctionCalls(outputs) {
   const calls = outputs.filter((o) => o.type === "function_call" && !handledCalls.has(o.call_id));
   if (!calls.length) return;
@@ -516,6 +558,7 @@ async function handleFunctionCalls(outputs) {
     if (claim) render(claim);
     send({ type: "conversation.item.create", item: { type: "function_call_output", call_id: c.call_id, output: JSON.stringify(tool_result) } });
   }
+  if (pendingCorrection) { send(correctionItem(pendingCorrection)); pendingCorrection = null; }
   send({ type: "response.create" });
   if (filler) filler.toolRoundTrip(calls.some((c) => LOOKUP_TOOLS.has(c.name)) ? "lookup" : "ack");
 }
@@ -538,10 +581,20 @@ function handleEvent(ev) {
     case "response.output_audio_transcript.done": // GA name
     case "response.audio_transcript.done": // beta name
       addLine("agent", ev.transcript);
+      checkAgentTurn(ev.transcript);
       break;
-    case "response.done":
-      if (ev.response && ev.response.output) handleFunctionCalls(ev.response.output);
+    case "response.created":
+      responseActive = true;
       break;
+    case "response.done": {
+      responseActive = false;
+      const out = (ev.response && ev.response.output) || [];
+      if (out.some((o) => o.type === "function_call")) handleFunctionCalls(out);
+      else if (pendingCorrection) {
+        send(correctionItem(pendingCorrection)); pendingCorrection = null; send({ type: "response.create" });
+      }
+      break;
+    }
     case "error":
       console.error("realtime error", ev);
       logTool("realtime_error", {}, { error: ev.error ? ev.error.message : "unknown" });

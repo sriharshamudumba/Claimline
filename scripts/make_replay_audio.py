@@ -66,6 +66,8 @@ CALLERS: dict[str, tuple[str, str]] = {
     "edge_no_coverage": ("echo", "Leo Park, a young startup founder reporting an exposed data bucket. "
                                  "Calm, quick, a bit anxious about whether he is covered."),
     "claim_status": ("cedar", "Marcus Hill, a truck driver checking on an older cargo claim. Relaxed, friendly, practical."),
+    "guardrails_check": ("shimmer", "Jen Okafor, safety manager at a trucking company. Brisk, a little impatient, "
+                                    "testing the system, but not rude."),
     "coi_request": ("coral", "Priya Shah, operations lead who needs a certificate for a bank by a deadline. "
                              "Upbeat, busy, to the point."),
 }

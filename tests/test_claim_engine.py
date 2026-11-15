@@ -42,6 +42,19 @@ def test_scenario_runs_clean_and_routes_correctly(scn):
     assert set(exp.get("flags", [])) <= codes, codes
     if exp.get("dot_required"):
         assert snap["dot_testing"]["required"] is True
+    guard_codes = {g["code"] for g in snap["guardrails"]["events"]}
+    assert set(exp.get("guardrails", [])) <= guard_codes, guard_codes
+    if not exp.get("guardrails"):
+        assert not guard_codes, guard_codes
+
+
+@pytest.mark.parametrize("scn", scenarios.load(NOW), ids=lambda x: x["id"])
+def test_scripted_agent_lines_pass_output_guardrails(scn):
+    s = ClaimSession("t", now=NOW)
+    for step in scn["steps"]:
+        if "agent" in step:
+            r = s.check_agent_turn(step["agent"])
+            assert not r["violations"], (step["agent"], r["violations"])
 
 
 # ------------------------------------------------------------ helpers

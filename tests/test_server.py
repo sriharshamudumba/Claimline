@@ -65,3 +65,13 @@ def test_filler_recorder_helpers():
     assert mf.trim_silence(b"\x00\x00" * 1000) == b""
     assert mf.looks_right("Mm-hmm.", "Mhm.")
     assert not mf.looks_right("Okay.", "Okay, so tell me what happened next with the truck.")
+
+
+def test_agent_turn_guardrail_endpoint():
+    sid = client.post("/api/demo/guardrails_check").json()["session_id"]
+    r = client.post("/api/guardrails/agent_turn", json={"session_id": sid, "text": "Don't worry, you're covered."}).json()
+    assert r["violations"][0]["code"] == "coverage_promise"
+    assert r["correction"].startswith("GUARDRAIL")
+    assert r["claim"]["guardrails"]["agent_turns_checked"] == 1
+    ok = client.post("/api/guardrails/agent_turn", json={"session_id": sid, "text": "An adjuster makes that call."}).json()
+    assert ok["violations"] == [] and ok["correction"] is None

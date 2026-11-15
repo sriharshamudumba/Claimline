@@ -125,6 +125,8 @@ h1 { font-size: clamp(34px, 4.4vw, 54px); line-height: 1.05; letter-spacing: -0.
 .notes li { color: var(--red); }
 .notes li .why { display: block; color: var(--sub); }
 .notes li.low { color: var(--ink); }
+.guards li.caught { color: var(--red); }
+.guards li.count { color: var(--sub); list-style: none; margin-left: -18px; }
 .notes li.internal::after { content: " (internal, never told to the caller)"; color: var(--sub); font-size: 13px; }
 
 .stamp { font: 700 14px var(--sans); color: var(--form); border: 2px solid var(--form); padding: 2px 8px; transform: rotate(-3deg); }

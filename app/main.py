@@ -160,6 +160,19 @@ def run_tool(name: str, call: ToolCall) -> dict:
     return {"tool_result": result, "claim": session.snapshot()}
 
 
+class AgentTurn(BaseModel):
+    session_id: str
+    text: str = Field(max_length=4000)
+
+
+@app.post("/api/guardrails/agent_turn")
+def agent_turn(turn: AgentTurn) -> dict:
+    """Output guardrail: the browser posts each finished agent turn; violations come back with a correction."""
+    session = _get(turn.session_id)
+    result = session.check_agent_turn(turn.text)
+    return {**result, "claim": session.snapshot()}
+
+
 @app.get("/api/claim/{session_id}")
 def get_claim(session_id: str) -> dict:
     return _get(session_id).snapshot()
