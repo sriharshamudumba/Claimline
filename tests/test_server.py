@@ -75,3 +75,27 @@ def test_agent_turn_guardrail_endpoint():
     assert r["claim"]["guardrails"]["agent_turns_checked"] == 1
     ok = client.post("/api/guardrails/agent_turn", json={"session_id": sid, "text": "An adjuster makes that call."}).json()
     assert ok["violations"] == [] and ok["correction"] is None
+
+
+def test_session_asks_for_minimal_reasoning_and_fast_turns(monkeypatch):
+    sent = {}
+
+    class Resp:
+        status_code = 200
+        text = ""
+        def json(self):
+            return {"value": "ek_test"}
+
+    class FakeClient:
+        def __init__(self, *a, **k): pass
+        async def __aenter__(self): return self
+        async def __aexit__(self, *a): return False
+        async def post(self, url, headers=None, json=None):
+            sent.update(json)
+            return Resp()
+
+    _reset(key="sk-test")
+    monkeypatch.setattr(main.httpx, "AsyncClient", FakeClient)
+    assert client.post("/session").status_code == 200
+    assert sent["session"]["reasoning"] == {"effort": "minimal"}
+    assert sent["session"]["audio"]["input"]["turn_detection"] == {"type": "semantic_vad", "eagerness": "high"}

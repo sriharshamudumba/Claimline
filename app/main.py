@@ -35,13 +35,28 @@ DEMO_ACCESS_CODE = os.getenv("DEMO_ACCESS_CODE", "")          # empty = no code 
 CALLS_PER_IP_PER_HOUR = int(os.getenv("CALLS_PER_IP_PER_HOUR", "6"))
 CALLS_PER_DAY = int(os.getenv("CALLS_PER_DAY", "60"))
 MAX_CALL_MINUTES = int(os.getenv("MAX_CALL_MINUTES", "8"))
-FILLER_MS = int(os.getenv("FILLER_MS", "500"))  # play a filler if the agent hasn't spoken by then; 0 = off
+# Speed knobs. minimal reasoning = fastest replies on reasoning models (gpt-realtime-2.x); ignored by older ones.
+REASONING_EFFORT = os.getenv("REASONING_EFFORT", "minimal").strip().lower()  # minimal|low|medium|high, "" = model default
+TURN_DETECTION = os.getenv("TURN_DETECTION", "semantic").strip().lower()      # semantic | server
+VAD_EAGERNESS = os.getenv("VAD_EAGERNESS", "high").strip().lower()            # semantic only: low|medium|high|auto
+SILENCE_MS = int(os.getenv("SILENCE_MS", "500"))                               # server only: pause that ends a turn
+FILLER_MS = int(os.getenv("FILLER_MS", "500"))
+
+
+def _turn_detection() -> dict:
+    if TURN_DETECTION == "server":
+        return {"type": "server_vad", "silence_duration_ms": SILENCE_MS, "prefix_padding_ms": 300}
+    td = {"type": "semantic_vad"}
+    if VAD_EAGERNESS in ("low", "medium", "high"):
+        td["eagerness"] = VAD_EAGERNESS
+    return td  # play a filler if the agent hasn't spoken by then; 0 = off
 SESSION_TTL_SECONDS = 3 * 3600
 MAX_SESSIONS = 500
 
 app = FastAPI(title="Claimline")  # FNOL intake and triage demo
 print(f"[claimline] realtime model={MODEL!r} key=...{(OPENAI_API_KEY or '')[-4:]} "
-      f"transcribe={TRANSCRIBE_MODEL or 'off'} access_code={'on' if DEMO_ACCESS_CODE else 'off'}", flush=True)
+      f"transcribe={TRANSCRIBE_MODEL or 'off'} access_code={'on' if DEMO_ACCESS_CODE else 'off'} "
+      f"reasoning={REASONING_EFFORT or 'default'} turns={TURN_DETECTION}", flush=True)
 SESSIONS: dict[str, ClaimSession] = {}
 _CREATED: dict[str, float] = {}
 _IP_CALLS: dict[str, deque] = {}
@@ -117,7 +132,7 @@ async def create_session(request: Request) -> dict:
             "audio": {
                 "input": {
                     "noise_reduction": {"type": "near_field"},
-                    "turn_detection": {"type": "semantic_vad"},
+                    "turn_detection": _turn_detection(),
                 },
                 "output": {"voice": VOICE},
             },
@@ -125,12 +140,22 @@ async def create_session(request: Request) -> dict:
     }
     if TRANSCRIBE_MODEL:
         payload["session"]["audio"]["input"]["transcription"] = {"model": TRANSCRIBE_MODEL}
+    if REASONING_EFFORT:
+        payload["session"]["reasoning"] = {"effort": REASONING_EFFORT}
     async with httpx.AsyncClient(timeout=15) as client:
         r = await client.post(
             "https://api.openai.com/v1/realtime/client_secrets",
             headers={"Authorization": f"Bearer {OPENAI_API_KEY}"},
             json=payload,
         )
+        if r.status_code == 400 and "reasoning" in r.text and "reasoning" in payload["session"]:
+            # Older realtime models don't take a reasoning setting; retry without it instead of failing the call.
+            payload["session"].pop("reasoning")
+            r = await client.post(
+                "https://api.openai.com/v1/realtime/client_secrets",
+                headers={"Authorization": f"Bearer {OPENAI_API_KEY}"},
+                json=payload,
+            )
     if r.status_code >= 400:
         raise HTTPException(502, f"OpenAI error {r.status_code}: {r.text}")
 
