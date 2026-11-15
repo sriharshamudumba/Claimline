@@ -292,19 +292,19 @@ async function freshSnapshot() {
 
 const PERSONAS = [
   { id: "truck", scenario: "trucking_crash", name: "Marcus Hill, truck driver", gist: "rear-ended a car on I-80",
-    ref: "Ridgeline Freight, policy CT-20417",
+    ref: "Quillmont Freight, policy CT-20417",
     story: "The other driver went to the hospital. Both vehicles were towed and the trooper gave you a ticket.",
     opener: "I need to report an accident.", watch: "the DOT drug and alcohol test deadlines it gives you" },
   { id: "wire", scenario: "wire_fraud", name: "Dan Wu, CFO", gist: "wired $186,000 to a scammer",
-    ref: "Lumen Labs, policy TS-88120",
+    ref: "Tessivo Labs, policy TS-88120",
     story: "A vendor's bank details were changed by email. The payment went out yesterday morning and you feel awful about it.",
     opener: "I think we wired money to a scammer.", watch: "how it responds to you being upset, and the 72-hour recall deadline" },
   { id: "ransom", scenario: "ransomware", name: "Priya Shah, CEO", gist: "hit by ransomware",
-    ref: "Lumen Labs, policy TS-88120",
+    ref: "Tessivo Labs, policy TS-88120",
     story: "Your build servers are encrypted and there's a note demanding 4 bitcoin. Ask whether you should just pay.",
     opener: "We've been hit with ransomware.", watch: "what it tells you about paying" },
   { id: "status", scenario: "claim_status", name: "Marcus Hill, following up", gist: "checking on an open cargo claim",
-    ref: "Ridgeline Freight, claim CLM-260902-4417",
+    ref: "Quillmont Freight, claim CLM-260902-4417",
     story: "Ask where the claim stands, then tell them the receiver found two of the missing pallets.",
     opener: "I'm calling to check on a claim.", watch: "the status it reads back and the note it adds" },
   { id: "free", scenario: "edge_no_coverage", name: "Anyone you like", gist: "trying to break it",
@@ -373,14 +373,14 @@ async function loadConfig() {
 
 // Who is on each recorded call, as shown in the list.
 const RECORDED_CALLERS = {
-  trucking_crash: "Marcus Hill, truck driver at Ridgeline Freight",
-  ransomware: "Priya Shah, Lumen Labs",
-  wire_fraud: "Dan Wu, CFO at Lumen Labs",
-  eo_ai_demand: "Priya Shah, Lumen Labs",
+  trucking_crash: "Marcus Hill, truck driver at Quillmont Freight",
+  ransomware: "Priya Shah, Tessivo Labs",
+  wire_fraud: "Dan Wu, CFO at Tessivo Labs",
+  eo_ai_demand: "Priya Shah, Tessivo Labs",
   third_party: "Rosa Delgado, the other driver",
-  edge_no_coverage: "Leo Park, founder of Northwind AI",
+  edge_no_coverage: "Leo Park, founder of Orrowind AI",
   claim_status: "Marcus Hill, following up on a claim",
-  coi_request: "Priya Shah, Lumen Labs",
+  coi_request: "Priya Shah, Tessivo Labs",
 };
 let scenarioList = [];
 

@@ -63,6 +63,7 @@ h1 { font-size: clamp(34px, 4.4vw, 54px); line-height: 1.05; letter-spacing: -0.
 .code-field input { font: 17px var(--typed); padding: 11px 12px; width: 190px; border: 1.5px solid #aab8b1; border-radius: 4px; background: var(--paper); color: var(--ink); }
 .fineprint { color: var(--sub); font-size: 15px; margin: 8px 0; }
 .recorded { margin-top: 36px; }
+.disclaimer { margin-top: 20px; }
 .recorded h2 { font-size: 18px; margin: 0 0 4px; }
 .recorded-list { list-style: none; margin: 12px 0 0; padding: 0; }
 .recorded-list li { border-top: 1px solid #c5cfca; }

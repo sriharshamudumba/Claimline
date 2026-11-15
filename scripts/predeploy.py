@@ -114,13 +114,13 @@ def stage_session(url: str, code: str) -> bool:
 CALLER_LINES = [
     "I need to report an accident. I rear-ended a car on I-80 a couple of hours ago.",
     "I'm okay, not hurt. Just shaken up.",
-    "Marcus Hill. I'm the driver for Ridgeline Freight.",
+    "Marcus Hill. I'm the driver for Quillmont Freight.",
     "I rear-ended a sedan on I-80 westbound near exit 15 in Reno, Nevada, about two hours ago. Traffic stopped suddenly and "
     "I couldn't stop in time. One other car. The other driver was taken by ambulance with neck pain. Nobody died.",
     "The policy number is C T 2 0 4 1 7.",
     "Yes, that's right.",
     "I was in the Cascadia, unit T1, under dispatch hauling produce. The cargo is fine, no hazmat.",
-    "Both vehicles got towed. My truck is at Sierra Tow in Sparks. The trooper gave me a citation for following too close.",
+    "Both vehicles got towed. My truck is at Tallowcreek Towing in Sparks. The trooper gave me a citation for following too close.",
     "Police report number is N H P 26 118842. And yes, the truck has a dashcam.",
     "Yes, that's all correct.",
     "Yes, please go ahead and submit it.",

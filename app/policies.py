@@ -9,10 +9,10 @@ POLICIES: dict[str, dict] = {
     # Small trucking fleet: auto liability, physical damage, cargo (occurrence forms)
     "CT20417": {
         "policy_number": "CT-20417",
-        "insured": "Ridgeline Freight LLC",
+        "insured": "Quillmont Freight LLC",
         "program": "trucking",
         "status": "active",
-        "usdot": "3318842",
+        "usdot": "9900417",
         "term_start": date(2026, 7, 15),
         "term_end": date(2027, 7, 15),
         "coverages": {
@@ -31,11 +31,11 @@ POLICIES: dict[str, dict] = {
     # Cancelled trucking policy, for the "loss after cancellation" case
     "CT17003": {
         "policy_number": "CT-17003",
-        "insured": "Delta Haul Co",
+        "insured": "Ferrisdown Haul Co",
         "program": "trucking",
         "status": "cancelled",
         "cancel_date": date(2026, 10, 1),
-        "usdot": "2290417",
+        "usdot": "9900522",
         "term_start": date(2026, 1, 10),
         "term_end": date(2027, 1, 10),
         "coverages": {
@@ -50,7 +50,7 @@ POLICIES: dict[str, dict] = {
     # Series A startup with the full stack (claims-made liability lines)
     "TS88120": {
         "policy_number": "TS-88120",
-        "insured": "Lumen Labs Inc",
+        "insured": "Tessivo Labs Inc",
         "program": "startup",
         "status": "active",
         "term_start": date(2026, 4, 1),
@@ -78,7 +78,7 @@ POLICIES: dict[str, dict] = {
     # Brand-new seed policy, D&O and CGL only (no cyber)
     "TS91002": {
         "policy_number": "TS-91002",
-        "insured": "Northwind AI Inc",
+        "insured": "Orrowind AI Inc",
         "program": "startup",
         "status": "active",
         "term_start": date(2026, 11, 1),
@@ -108,7 +108,7 @@ EXISTING_CLAIMS = [
 ]
 
 # Approved incident-response vendors (fictional)
-PANEL_VENDORS = ["Bastion IR", "Northgate Forensics", "Clearwater Breach Counsel"]
+PANEL_VENDORS = ["Brackenhale IR", "Wrenfield Forensics", "Ashcombe Breach Counsel"]
 
 _SUFFIXES = re.compile(r"\b(llc|inc|incorporated|corp|corporation|co|company|ltd)\b")
 

@@ -54,12 +54,12 @@ def new_loss(s):
 def trucking_session(**caller):
     s = new_loss(ClaimSession("t", now=NOW))
     s.identify_caller(caller.get("name", "Marcus Hill"), caller.get("role", "driver"), caller_ok=caller.get("ok", True))
-    assert s.lookup_policy("Ridgeline Freight", policy_number="ct-20417")["matched"]
+    assert s.lookup_policy("Quillmont Freight", policy_number="ct-20417")["matched"]
     s.open_claim("trucking")
     return s
 
 
-def startup_session(line, name="Priya Shah", policy="TS-88120", biz="Lumen Labs"):
+def startup_session(line, name="Priya Shah", policy="TS-88120", biz="Tessivo Labs"):
     s = new_loss(ClaimSession("t", now=NOW))
     s.identify_caller(name, "policyholder_contact", caller_ok=True)
     assert s.lookup_policy(biz, policy_number=policy)["matched"]
@@ -71,7 +71,7 @@ def startup_session(line, name="Priya Shah", policy="TS-88120", biz="Lumen Labs"
 
 def test_tools_enforce_order():
     s = new_loss(ClaimSession("t", now=NOW))
-    assert s.lookup_policy("Ridgeline")["error"] == "caller_not_identified"
+    assert s.lookup_policy("Quillmont")["error"] == "caller_not_identified"
     assert s.open_claim("trucking")["error"] == "caller_not_identified"
     s.identify_caller("Marcus Hill", "driver", caller_ok=True)
     assert s.update_claim({"injuries": True})["error"] == "claim_not_open"
@@ -80,7 +80,7 @@ def test_tools_enforce_order():
 def test_policy_number_must_match_business_name():
     s = new_loss(ClaimSession("t", now=NOW))
     s.identify_caller("Marcus Hill", "driver", caller_ok=True)
-    assert not s.lookup_policy("Lumen Labs", policy_number="CT-20417")["matched"]
+    assert not s.lookup_policy("Tessivo Labs", policy_number="CT-20417")["matched"]
 
 
 def test_three_failed_lookups_escalate():
@@ -88,21 +88,21 @@ def test_three_failed_lookups_escalate():
     s.identify_caller("X", "policyholder_contact", caller_ok=True)
     for _ in range(3):
         s.lookup_policy("Nobody Inc", policy_number="ZZ-1")
-    assert s.lookup_policy("Ridgeline", policy_number="CT-20417")["error"] == "max_attempts_reached"
+    assert s.lookup_policy("Quillmont", policy_number="CT-20417")["error"] == "max_attempts_reached"
     assert any(f["code"] == "policy_not_located" for f in s.snapshot()["flags"])
 
 
 def test_unlisted_caller_gets_limited_disclosure():
     s = new_loss(ClaimSession("t", now=NOW))
     s.identify_caller("Random Person", "policyholder_contact", caller_ok=True)
-    r = s.lookup_policy("Ridgeline Freight", policy_number="CT-20417")
+    r = s.lookup_policy("Quillmont Freight", policy_number="CT-20417")
     assert "coverages" not in r and "note" in r
 
 
 def test_third_party_never_sees_policy_details():
     s = new_loss(ClaimSession("t", now=NOW))
     s.identify_caller("Rosa Delgado", "third_party_claimant", caller_ok=True)
-    r = s.lookup_policy("Ridgeline Freight", usdot_number="3318842")
+    r = s.lookup_policy("Quillmont Freight", usdot_number="9900417")
     assert "policy_number" not in r and "coverages" not in r
 
 
@@ -184,7 +184,7 @@ def test_duplicate_claim_detected():
 def test_cancelled_policy_flagged():
     s = new_loss(ClaimSession("t", now=NOW))
     s.identify_caller("Sam Reyes", "driver", caller_ok=True)
-    s.lookup_policy("Delta Haul", policy_number="CT-17003")
+    s.lookup_policy("Ferrisdown Haul", policy_number="CT-17003")
     s.open_claim("trucking")
     s.update_claim({"loss_date": "2026-11-10"})
     assert any("cancelled" in f["reason"] for f in s.snapshot()["flags"])
@@ -220,7 +220,7 @@ def test_wire_window_passed():
 
 def test_panel_vendor_is_fine():
     s = startup_session("cyber")
-    s.update_claim({"incident_type": "ransomware", "vendor_engaged": "Bastion IR"})
+    s.update_claim({"incident_type": "ransomware", "vendor_engaged": "Brackenhale IR"})
     assert "non_panel_vendor" not in {f["code"] for f in s.snapshot()["flags"]}
 
 
@@ -253,7 +253,7 @@ def test_served_lawsuit_creates_answer_deadline_and_litigation_queue():
 
 
 def test_employment_claim_without_epli_flags_no_coverage():
-    s = startup_session("liability", name="Leo Park", policy="TS-91002", biz="Northwind AI")
+    s = startup_session("liability", name="Leo Park", policy="TS-91002", biz="Orrowind AI")
     s.update_claim({"allegation": "employment"})
     assert "no_matching_coverage" in {f["code"] for f in s.snapshot()["flags"]}
 
@@ -303,7 +303,7 @@ def test_injury_words_trigger_medical_check_even_for_startup_caller():
 def test_care_guidance_given_once():
     s = new_loss(ClaimSession("t", now=NOW))
     s.identify_caller("Dan Wu", "policyholder_contact", caller_ok=False)
-    s.lookup_policy("Lumen Labs", policy_number="TS-88120")
+    s.lookup_policy("Tessivo Labs", policy_number="TS-88120")
     assert "care_guidance" not in s.open_claim("cyber")
 
 
@@ -324,7 +324,7 @@ def test_wellbeing_is_first_question_on_every_line():
         s = new_loss(ClaimSession("t", now=NOW))
         s.identify_caller("Priya Shah", "policyholder_contact", caller_ok=True)
         s.fields.pop("caller_ok")
-        s.lookup_policy("Lumen Labs", policy_number="TS-88120")
+        s.lookup_policy("Tessivo Labs", policy_number="TS-88120")
         assert s.open_claim(line)["next_question"]["field"] == "caller_ok"
 
 
@@ -345,7 +345,7 @@ def test_caller_can_tell_the_story_before_the_policy_lookup():
                         "injuries": False, "description": "Rear-ended a sedan"})
     assert not r["rejected"]
     assert r["next_question"]["field"] == "policy"  # policy is asked right after the story
-    m = s.lookup_policy("Ridgeline Freight", policy_number="CT-20417")
+    m = s.lookup_policy("Quillmont Freight", policy_number="CT-20417")
     assert m["matched"] and m["next_question"]["field"] == "accident_type"
 
 
@@ -403,8 +403,8 @@ def test_claim_lookup_needs_matching_business():
     s = ClaimSession("t", now=NOW)
     s.set_call_reason("existing_claim")
     s.identify_caller("Someone", "policyholder_contact")
-    assert not s.lookup_claim("CLM-260902-4417", "Lumen Labs")["found"]
-    assert s.lookup_claim("clm 260902 4417", "Ridgeline Freight")["found"]
+    assert not s.lookup_claim("CLM-260902-4417", "Tessivo Labs")["found"]
+    assert s.lookup_claim("clm 260902 4417", "Quillmont Freight")["found"]
 
 
 def test_note_requires_verified_claim():
@@ -420,7 +420,7 @@ def test_claim_filed_on_one_call_is_findable_on_the_next():
     s2 = ClaimSession("t2", now=NOW)
     s2.set_call_reason("existing_claim")
     s2.identify_caller("Dan Wu", "policyholder_contact")
-    r = s2.lookup_claim(number, "Lumen Labs")
+    r = s2.lookup_claim(number, "Tessivo Labs")
     assert r["found"] and r["line"] == "cyber"
 
 
@@ -428,5 +428,5 @@ def test_service_request_created():
     s = ClaimSession("t", now=NOW)
     s.set_call_reason("certificate_request")
     s.identify_caller("Priya Shah", "policyholder_contact")
-    r = s.create_service_request("certificate_request", "COI for Northbank", deadline="Friday")
+    r = s.create_service_request("certificate_request", "COI for Brightholm", deadline="Friday")
     assert r["request_number"].startswith("SR-") and "Friday" in r["say_to_caller"]
